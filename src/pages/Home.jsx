@@ -6,10 +6,25 @@ import TaskModal from '../components/TaskModal';
 import './Pages.css';
 
 const Home = () => {
-  const { profile, tasks, studyTime, completeTask, deleteTask, addTask } = useAppContext();
+  const { profile, tasks, priorities, studyTime, completeTask, deleteTask, addTask, fixedSchedules, skippedFixedSchedules, skipFixedSchedule } = useAppContext();
+
+  const getPriorityEmoji = (priorityName) => {
+    const index = priorities.indexOf(priorityName);
+    if (index <= 0) return '🚨';
+    if (index === priorities.length - 1) return '🔵';
+    return '🟡';
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const todayTasks = tasks.filter(t => t.date === new Date().toISOString().split('T')[0]);
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todayTasks = tasks.filter(t => t.date === todayStr);
+  const todayDayKor = ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()];
+  
+  const todaysFixedSchedules = (fixedSchedules || []).filter(s => 
+    s.day === todayDayKor && 
+    !(skippedFixedSchedules || []).some(skip => skip.scheduleId === s.id && skip.date === todayStr)
+  );
+  
   const completedCount = todayTasks.filter(t => t.completed).length;
   const progress = todayTasks.length === 0 ? 0 : (completedCount / todayTasks.length) * 100;
 
@@ -68,6 +83,30 @@ const Home = () => {
             <ProgressBar progress={progress} />
           </div>
           <div className="task-list">
+            {todaysFixedSchedules.map(schedule => (
+              <div key={`fixed-${schedule.id}`} className="task-item flex-between" style={{ borderLeft: `3px solid ${schedule.color}`, paddingLeft: '8px', marginBottom: '8px' }}>
+                <div className="flex-center" style={{ gap: '12px' }}>
+                  <div style={{ width: '24px', display: 'flex', justifyContent: 'center' }}>
+                    <Clock size={16} color="var(--text-secondary)" />
+                  </div>
+                  <div>
+                    <div className="task-title">{schedule.title}</div>
+                    <div className="task-meta" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Badge color="gray">고정 일정</Badge>
+                      <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                        {schedule.startTime} - {schedule.endTime}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  className="icon-btn delete-btn" 
+                  onClick={() => skipFixedSchedule(schedule.id, todayStr)}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
             {todayTasks.map(task => (
               <div key={task.id} className="task-item flex-between">
                 <div className="flex-center" style={{ gap: '12px' }}>
@@ -82,8 +121,7 @@ const Home = () => {
                     <div className="task-meta" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Badge color={task.category === '과제' ? 'warm' : 'blue'}>{task.category}</Badge>
                       <span style={{ fontSize: '11px', letterSpacing: '1px' }}>
-                        {task.priority === 'high' || task.priority === '높음' ? '⭐⭐⭐' : 
-                         task.priority === 'medium' || task.priority === '보통' ? '⭐⭐' : '⭐'}
+                        {getPriorityEmoji(task.priority)} {task.priority}
                       </span>
                       {task.time && <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{task.time}</span>}
                     </div>

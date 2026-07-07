@@ -7,7 +7,15 @@ import CategoryEditModal from '../components/CategoryEditModal';
 import './Pages.css';
 
 const Planner = () => {
-  const { tasks, categories, completeTask, addTask, deleteTask } = useAppContext();
+  const { tasks, categories, priorities, completeTask, addTask, deleteTask, fixedSchedules, skippedFixedSchedules, skipFixedSchedule } = useAppContext();
+  
+  const getPriorityEmoji = (priorityName) => {
+    const index = priorities.indexOf(priorityName);
+    if (index <= 0) return '🚨';
+    if (index === priorities.length - 1) return '🔵';
+    return '🟡';
+  };
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('전체');
@@ -34,6 +42,18 @@ const Planner = () => {
   const displayedTasks = activeCategory === '전체' 
     ? selectedDateTasks 
     : selectedDateTasks.filter(t => t.category === activeCategory);
+
+  const getSelectedDayKor = () => {
+    const [y, m, d] = selectedDate.split('-');
+    const dateObj = new Date(y, parseInt(m)-1, d);
+    const days = ['일', '월', '화', '수', '목', '금', '토'];
+    return days[dateObj.getDay()];
+  };
+
+  const todaysFixedSchedules = (fixedSchedules || []).filter(s => 
+    s.day === getSelectedDayKor() && 
+    !(skippedFixedSchedules || []).some(skip => skip.scheduleId === s.id && skip.date === selectedDate)
+  );
 
   return (
     <div className="page-container" style={{ paddingTop: '16px' }}>
@@ -106,6 +126,33 @@ const Planner = () => {
         </div>
         
         <div className="task-list">
+          {todaysFixedSchedules.map(schedule => (
+            <Card key={`fixed-${schedule.id}`} style={{ padding: '16px', marginBottom: '12px', borderLeft: `4px solid ${schedule.color}` }}>
+              <div className="flex-between">
+                <div className="flex-center" style={{ gap: '12px' }}>
+                  <div style={{ width: '24px', display: 'flex', justifyContent: 'center' }}>
+                    <CalendarIcon size={18} color="var(--text-secondary)" />
+                  </div>
+                  <div>
+                    <div className="task-title">{schedule.title}</div>
+                    <div className="task-meta" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Badge color="gray">고정 일정</Badge>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                        {schedule.startTime} - {schedule.endTime}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  className="icon-btn delete-btn" 
+                  onClick={() => skipFixedSchedule(schedule.id, selectedDate)}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </Card>
+          ))}
+          
           {displayedTasks.map(task => (
             <Card key={task.id} style={{ padding: '16px', marginBottom: '12px' }}>
               <div className="flex-between">
@@ -121,8 +168,7 @@ const Planner = () => {
                     <div className="task-meta" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Badge color={task.category === '과제' ? 'warm' : 'blue'}>{task.category}</Badge>
                       <span style={{ fontSize: '11px', letterSpacing: '1px' }}>
-                        {task.priority === 'high' || task.priority === '높음' ? '⭐⭐⭐' : 
-                         task.priority === 'medium' || task.priority === '보통' ? '⭐⭐' : '⭐'}
+                        {getPriorityEmoji(task.priority)} {task.priority}
                       </span>
                       {task.time && <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{task.time}</span>}
                     </div>

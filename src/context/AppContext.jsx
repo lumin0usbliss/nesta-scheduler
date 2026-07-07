@@ -5,16 +5,34 @@ const AppContext = createContext();
 export const useAppContext = () => useContext(AppContext);
 
 export const AppProvider = ({ children }) => {
-  const [profile, setProfile] = useState({
-    name: '김우주',
-    school: '한국대학교',
-    department: '경영정보학과',
-    grade: '4학년'
+  const [profile, setProfile] = useState(() => {
+    const saved = localStorage.getItem('nesta_profile');
+    return saved ? JSON.parse(saved) : {
+      name: '김우주',
+      school: '한국대학교',
+      department: '경영정보학과',
+      grade: '4학년'
+    };
+  });
+
+  const [fixedSchedules, setFixedSchedules] = useState(() => {
+    const saved = localStorage.getItem('nesta_fixed_schedules');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [skippedFixedSchedules, setSkippedFixedSchedules] = useState(() => {
+    const saved = localStorage.getItem('nesta_skipped_schedules');
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [categories, setCategories] = useState(() => {
     const saved = localStorage.getItem('nesta_categories');
     return saved ? JSON.parse(saved) : ['수업', '과제', '시험', '프로젝트'];
+  });
+
+  const [priorities, setPriorities] = useState(() => {
+    const saved = localStorage.getItem('nesta_priorities');
+    return saved ? JSON.parse(saved) : ['좆됨', '못하면 못하는거지~'];
   });
 
   const [tasks, setTasks] = useState(() => {
@@ -27,8 +45,24 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
+    localStorage.setItem('nesta_profile', JSON.stringify(profile));
+  }, [profile]);
+
+  useEffect(() => {
+    localStorage.setItem('nesta_fixed_schedules', JSON.stringify(fixedSchedules));
+  }, [fixedSchedules]);
+
+  useEffect(() => {
+    localStorage.setItem('nesta_skipped_schedules', JSON.stringify(skippedFixedSchedules));
+  }, [skippedFixedSchedules]);
+
+  useEffect(() => {
     localStorage.setItem('nesta_categories', JSON.stringify(categories));
   }, [categories]);
+
+  useEffect(() => {
+    localStorage.setItem('nesta_priorities', JSON.stringify(priorities));
+  }, [priorities]);
 
   useEffect(() => {
     localStorage.setItem('nesta_tasks', JSON.stringify(tasks));
@@ -60,16 +94,49 @@ export const AppProvider = ({ children }) => {
     setCategories(newCategories);
   };
 
+  const updatePriorities = (newPriorities) => {
+    setPriorities(newPriorities);
+  };
+
+  const updateProfile = (updates) => {
+    setProfile(prev => ({ ...prev, ...updates }));
+  };
+
+  const addFixedSchedule = (schedule) => {
+    setFixedSchedules(prev => [...prev, { ...schedule, id: Date.now() }]);
+  };
+
+  const updateFixedSchedule = (id, updates) => {
+    setFixedSchedules(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+  };
+
+  const deleteFixedSchedule = (id) => {
+    setFixedSchedules(prev => prev.filter(s => s.id !== id));
+  };
+
+  const skipFixedSchedule = (scheduleId, date) => {
+    setSkippedFixedSchedules(prev => [...prev, { scheduleId, date }]);
+  };
+
   const value = {
     profile,
     categories,
+    priorities,
     tasks,
+    fixedSchedules,
+    skippedFixedSchedules,
     studyTime,
     completeTask,
     addTask,
     deleteTask,
     updateTask,
-    updateCategories
+    updateCategories,
+    updatePriorities,
+    updateProfile,
+    addFixedSchedule,
+    updateFixedSchedule,
+    deleteFixedSchedule,
+    skipFixedSchedule
   };
 
   return (

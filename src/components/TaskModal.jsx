@@ -2,14 +2,18 @@ import { useState } from 'react';
 import { X, Calendar as CalendarIcon } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { Button } from './UI';
+import CategoryEditModal from './CategoryEditModal';
+import PriorityEditModal from './PriorityEditModal';
 import './TaskModal.css';
 
 const TaskModal = ({ onClose, onAdd, defaultDate }) => {
-  const { categories } = useAppContext();
+  const { categories, priorities } = useAppContext();
   
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState(categories[0] || '기타');
-  const [priority, setPriority] = useState('보통');
+  const [priority, setPriority] = useState(priorities[0] || '보통');
+  const [isCategoryEditModalOpen, setIsCategoryEditModalOpen] = useState(false);
+  const [isPriorityEditModalOpen, setIsPriorityEditModalOpen] = useState(false);
   const [datetime, setDatetime] = useState(() => {
     const now = new Date();
     const offset = now.getTimezoneOffset() * 60000;
@@ -20,6 +24,22 @@ const TaskModal = ({ onClose, onAdd, defaultDate }) => {
     }
     return localNow;
   });
+
+  const handleCategoryChange = (e) => {
+    if (e.target.value === '__EDIT_CATEGORIES__') {
+      setIsCategoryEditModalOpen(true);
+    } else {
+      setCategory(e.target.value);
+    }
+  };
+
+  const handlePriorityChange = (e) => {
+    if (e.target.value === '__EDIT_PRIORITIES__') {
+      setIsPriorityEditModalOpen(true);
+    } else {
+      setPriority(e.target.value);
+    }
+  };
 
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
@@ -69,19 +89,21 @@ const TaskModal = ({ onClose, onAdd, defaultDate }) => {
 
           <div className="form-group">
             <label>카테고리</label>
-            <select value={category} onChange={(e) => setCategory(e.target.value)}>
+            <select value={category} onChange={handleCategoryChange}>
               {categories.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
+              <option value="__EDIT_CATEGORIES__">✏️ 카테고리 편집...</option>
             </select>
           </div>
 
           <div className="form-group">
             <label>우선순위</label>
-            <select value={priority} onChange={(e) => setPriority(e.target.value)}>
-              <option value="높음">높음</option>
-              <option value="보통">보통</option>
-              <option value="낮음">낮음</option>
+            <select value={priority} onChange={handlePriorityChange}>
+              {priorities.map(pri => (
+                <option key={pri} value={pri}>{pri}</option>
+              ))}
+              <option value="__EDIT_PRIORITIES__">✏️ 우선순위 편집...</option>
             </select>
           </div>
 
@@ -103,6 +125,13 @@ const TaskModal = ({ onClose, onAdd, defaultDate }) => {
           </div>
         </div>
       </div>
+      
+      {isCategoryEditModalOpen && (
+        <CategoryEditModal onClose={() => setIsCategoryEditModalOpen(false)} />
+      )}
+      {isPriorityEditModalOpen && (
+        <PriorityEditModal onClose={() => setIsPriorityEditModalOpen(false)} />
+      )}
     </div>
   );
 };
