@@ -1,0 +1,112 @@
+:root {
+  --primary: #5CA8F7;
+  --primary-light: #A7D8FF;
+  --bg-main: #F8FBFE;
+  --bg-card: #FFFFFF;
+  --accent-warm: #FFE6B8;
+  --text-primary: #374151;
+  --text-secondary: #6B7280;
+  --border-color: #E5E7EB;
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive Desktop Wrapper */
+.app-container {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f0f2f5; /* slightly darker background for the sides on desktop */
+}
+
+.mobile-wrapper {
+  width: 100%;
+  max-width: 480px; /* Mobile width container */
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* On screens larger than tablet, make the mobile-wrapper slightly wider or just center it */
+@media (min-width: 768px) {
+  .mobile-wrapper {
+    margin: 24px 0;
+    min-height: calc(100vh - 48px);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+}
+
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px; /* Space for bottom nav */
+}
+
+.content-area::-webkit-scrollbar {
+  display: none;
+}
+
+/* Utilities */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}

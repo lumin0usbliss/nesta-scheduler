@@ -1,0 +1,118 @@
+.nesta-card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.nesta-card.highlight {
+  background: linear-gradient(145deg, var(--bg-card) 0%, #F5FAFF 100%);
+  border: 1px solid var(--primary-light);
+}
+
+.nesta-card.highlight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: 4px 0 0 4px;
+}
+
+.nesta-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-blue {
+  background-color: rgba(92, 168, 247, 0.1);
+  color: var(--primary);
+}
+
+.badge-warm {
+  background-color: rgba(255, 230, 184, 0.3);
+  color: #D97706; /* Darker orange for text */
+}
+
+.badge-gray {
+  background-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.badge-green {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+}
+
+.nesta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 24px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  gap: 8px;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 14px rgba(92, 168, 247, 0.3);
+}
+
+.btn-primary:hover {
+  background-color: #4A90E2;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(92, 168, 247, 0.4);
+}
+
+.btn-secondary {
+  background-color: #F3F4F6;
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background-color: #E5E7EB;
+}
+
+.btn-warm {
+  background-color: var(--accent-warm);
+  color: #92400E;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1.5px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.nesta-progress-bg {
+  width: 100%;
+  background-color: #F3F4F6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.nesta-progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.5s ease-out;
+}
